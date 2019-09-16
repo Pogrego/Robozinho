@@ -1,0 +1,106 @@
+
+#define MOTOR_1A 9      // Laranja
+#define MOTOR_1B 8     //  Laranja
+#define PWM_1 10       //   Verde
+
+#define MOTOR_2A 6     // Laranja e Branco     
+#define MOTOR_2B 7    //  Laranja e Branco     
+#define PWM_2 5     //   Verde e Branco   
+
+#define WAIT 5000     //Constante de tempo
+#define VALOR_PWM 255 //Valor
+#define TEMPO_DE_GIRO 200 // 1000 = aprox 90 graus
+
+#define TEMPO_DELAY 5
+
+typedef struct motor{
+  int pinoA, pinoB, pinoPWM;
+} Motor;
+
+Motor motorEsq, motorDir;
+
+void inicializa_motores();
+void controlaMotor(Motor motorControlado, boolean sentido);
+void frente();
+void tras();
+void esquerda();
+void direita();
+void freia();
+
+void setup()
+{
+  inicializa_motores();
+  Serial.begin(115200);
+}
+
+void loop()
+{
+
+}
+void inicializa_motores()
+{
+  motorEsq.pinoA = MOTOR_1A;
+  motorEsq.pinoB = MOTOR_1B;
+  motorEsq.pinoPWM = PWM_1;
+
+  motorDir.pinoA = MOTOR_2A;
+  motorDir.pinoB = MOTOR_2B;
+  motorDir.pinoPWM = PWM_2;
+  
+  pinMode(motorEsq.pinoA, OUTPUT);
+  pinMode(motorEsq.pinoB, OUTPUT);
+  pinMode(motorEsq.pinoPWM, OUTPUT);
+  
+  pinMode(motorDir.pinoA, OUTPUT);
+  pinMode(motorDir.pinoB, OUTPUT);
+  pinMode(motorDir.pinoPWM, OUTPUT);
+
+  analogWrite (motorEsq.pinoPWM, VALOR_PWM);
+  analogWrite (motorDir.pinoPWM, VALOR_PWM);
+}
+
+void controlaMotor(Motor motorControlado, boolean sentido){
+  digitalWrite(motorControlado.pinoA, sentido);
+  digitalWrite(motorControlado.pinoB, !(sentido));
+}
+
+void frente()
+{
+  controlaMotor(motorEsq, FRENTE);
+  
+  controlaMotor(motorDir, FRENTE);
+}
+
+void tras()
+{
+  controlaMotor(motorEsq, TRAS);
+  
+  controlaMotor(motorDir, TRAS);
+}
+
+void esquerda()
+{
+  controlaMotor(motorEsq, TRAS);
+  
+  controlaMotor(motorDir, FRENTE);
+  
+//  delay(TEMPO_DE_GIRO);
+}
+
+void direita()
+{
+  controlaMotor(motorEsq, FRENTE);
+  
+  controlaMotor(motorDir, TRAS);
+  
+ // delay(TEMPO_DE_GIRO);
+}
+
+void freia()
+{
+  digitalWrite(MOTOR_1A, LOW);
+  digitalWrite(MOTOR_1B, LOW);
+  
+  digitalWrite(MOTOR_2A, LOW); 
+  digitalWrite(MOTOR_2B, LOW);
+}
