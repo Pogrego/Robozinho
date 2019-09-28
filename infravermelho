@@ -1,0 +1,17 @@
+
+#define VALOR_PWM 255 //Valor de PWM
+int S1 = 2;           //Sensor1
+int S2 = 4;           //Sensor2
+int S3 = 7;           //Sensor3
+int S4 = 8;           //Sensor4
+int S5 = 12;          //Sensor5
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(S1, INPUT);
+}
+
+void loop() {
+Serial.print("Leitura =");
+Serial.print(S1);
+}
