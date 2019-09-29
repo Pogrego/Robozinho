@@ -1,10 +1,11 @@
 
-#define VALOR_PWM 255 //Valor de PWM
-int S1 = 2;           //Sensor1
-int S2 = 4;           //Sensor2
-int S3 = 7;           //Sensor3
-int S4 = 8;           //Sensor4
-int S5 = 12;          //Sensor5
+#define VALOR_PWM 255      //Valor de PWM
+int S1 = 2;                //Sensor1
+int S2 = 4;                //Sensor2
+int S3 = 7;                //Sensor3
+int S4 = 8;                //Sensor4
+int S5 = 12;               //Sensor5
+int IR1,IR2,IR3,IR4,IR5;   //Leituras infravermelho
 
 void setup() {
   Serial.begin(9600);
@@ -12,6 +13,21 @@ void setup() {
 }
 
 void loop() {
-Serial.print("Leitura =");
-Serial.print(S1);
+  
+  IR1 = digitalRead(S1);
+//  IR2 = digitalRead(S2);
+//  IR3 = digitalRead(S3);
+//  IR4 = digitalRead(S4);
+//  IR5 = digitalRead(S5);
+  
+  Serial.print("Leitura 1");
+  Serial.println(IR1);
+//  Serial.print("Leitura 2");
+//  Serial.println(IR2);
+//  Serial.print("Leitura 1");
+//  Serial.println(IR3);
+//  Serial.print("Leitura 1");
+//  Serial.println(IR4);
+//  Serial.print("Leitura 1");
+//  Serial.println(IR5);
 }
