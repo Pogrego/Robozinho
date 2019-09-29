@@ -20,14 +20,14 @@ void loop() {
 //  IR4 = digitalRead(S4);
 //  IR5 = digitalRead(S5);
   
-  Serial.print("Leitura 1");
+  Serial.print("Leitura 1 ");
   Serial.println(IR1);
-//  Serial.print("Leitura 2");
+//  Serial.print("Leitura 2 ");
 //  Serial.println(IR2);
-//  Serial.print("Leitura 1");
+//  Serial.print("Leitura 3 ");
 //  Serial.println(IR3);
-//  Serial.print("Leitura 1");
+//  Serial.print("Leitura 4 ");
 //  Serial.println(IR4);
-//  Serial.print("Leitura 1");
+//  Serial.print("Leitura 5 ");
 //  Serial.println(IR5);
 }
