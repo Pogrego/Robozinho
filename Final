@@ -47,6 +47,7 @@ Motor motorEsq, motorDir;
 
 void setup() 
 {
+  Serial.begin(9600);
 // ************************** //
 //  inicializa infravermelho  //
 // ************************** //
@@ -94,11 +95,20 @@ void loop()
 // ********************** //
 //  Controle Proporcional //
 // ********************** //
-// CASO 1: Apenas sensor central = seguindo em frente
-  if(IR[3] == 1 && IR[1] == 0 && IR[2] == 0 && IR[4] == 0 && IR[5] == 0) 
-  {
+// CASO 4: Sensores encontram linha horizontal
+  if(IR[2]==1 && IR[3]==1 && IR[4]==1)
+  { 
+    flag = 1;
     IR[0] = 0;
     delay(TEMPO_DELAY); 
+  }
+// CASO 1: Apenas sensor central = seguindo em frente
+  else if(IR[3] == 1 && IR[1] == 0 && IR[2] == 0 && IR[4] == 0 && IR[5] == 0) 
+  {
+    IR[0] = 0;
+    flag = 0;
+    delay(TEMPO_DELAY); 
+
   }
 // CASO 2: Sensores da esq(1,2) = girar a direita
   else if((IR[1]==1 || IR[2]==1))
@@ -112,19 +122,13 @@ void loop()
     IR[0] = IR[0] + 1;
     delay(TEMPO_DELAY); 
   }
-// CASO 4: Sensores encontram linha horizontal
-  else if((IR[2]==1 && IR[3]==1) && IR[4]==1)
-  { 
-    flag = 1;
-    IR[0] = 0;
-    delay(TEMPO_DELAY); 
-  }
 
-// ******************** //
-//    Saida (Motores)   //
-// *******************  //
+
+//// ******************** //
+////    Saida (Motores)   //
+//// *******************  //
   //CASO 4: Freia
-  if(flag == 1)    
+  if(IR[0] == 0 && flag == 1 )    
   {
       digitalWrite(motorEsq.pinoA, LOW);
       digitalWrite(motorEsq.pinoB, LOW);
@@ -134,7 +138,8 @@ void loop()
   }
   else
   {
-    if(IR[0])//CASO 1: seguindo em frente
+    //CASO 1: seguindo em frente
+    if(IR[0] == 0 && flag == 0 )
     {
       digitalWrite(motorEsq.pinoA, FRENTE);
       digitalWrite(motorEsq.pinoB, !(FRENTE));
@@ -142,7 +147,8 @@ void loop()
       analogWrite(motorDir.pinoA, FRENTE_PWM);
       digitalWrite(motorDir.pinoB, !(FRENTE));  
     }
-    else if(IR[0]<0)//CASO 2: girar a direita
+    //CASO 2: girar a direita
+    else if(IR[0]<0 && flag == 0)
     {
       digitalWrite(motorEsq.pinoA, FRENTE);
       digitalWrite(motorEsq.pinoB, !(FRENTE));
@@ -150,7 +156,8 @@ void loop()
       digitalWrite(motorDir.pinoA, TRAS);
       analogWrite (motorDir.pinoB, FRENTE_PWM);       
     }
-    else if(IR[0]>0) //CASO 3: girar a esquerda  
+    //CASO 3: girar a esquerda  
+    else if(IR[0]>0 && flag == 0) 
     {
       digitalWrite(motorEsq.pinoA, TRAS);
       digitalWrite(motorEsq.pinoB, !(TRAS));
@@ -197,6 +204,54 @@ void loop()
 //      analogWrite(motorDir.pinoA, FRENTE_PWM);
 //      digitalWrite(motorDir.pinoB, !(FRENTE));     
 //      delay(200);
+// ********************************************** //
+// Teste 3: Verificar a saída de acordo com a     //
+// entrada.                                       //      
+// Resultado: sensor 5 nao funciona,              //
+// logica de controle foi corrigida               //
+// e agora funciona.                              //
+// ********************************************** //
+//        Serial.println("=========================");
+//        Serial.println("ENTRADA");
+//        Serial.print("[ S1: ");
+//        Serial.print(IR[1]);
+//        Serial.print(" S2: ");
+//        Serial.print(IR[2]);
+//        Serial.print(" S3: ");
+//        Serial.print(IR[3]);
+//        Serial.print(" S4: ");
+//        Serial.print(IR[4]);
+//        Serial.print(" S5: ");
+//        Serial.print(IR[5]);        
+//        Serial.print(" ]");
+//        //erro
+//        Serial.print("ERRO P: ");
+//        Serial.print(IR[0]);
+//        Serial.print("    FLAG ");
+//        Serial.println(flag);
+//        //saida
+//        Serial.println("SAIDA");
+//        if(IR[0] == 0 && flag == 1 )    
+//        {
+//        Serial.println("FREIA");    
+//        }
+//        else
+//        {
+//          if(IR[0] == 0 && flag == 0 )//CASO 1: seguindo em frente
+//          {
+//        Serial.println("FRENTE");
+//          }else if(IR[0]<0 && flag == 0){//CASO 2: girar a direita
+//        Serial.println("GIRA DIREITA"); 
+//          }
+//            else if(IR[0]>0 && flag == 0){ //CASO 3: girar a esquerda  
+//            Serial.println("GIRA ESQUERDA");  
+//          }
+//          //else
+//          //Serial.println("NAO PEGOU"); 
+//          } 
+//        Serial.println("=========================");
+//        delay(1000);         
+//                                    
 
   
 // -----------------------------------------------------------------------  
