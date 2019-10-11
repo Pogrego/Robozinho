@@ -28,6 +28,7 @@
 #define S4  PB8                //Sensor4
 #define S5  PB9               //Sensor5
 int IR[6];                     //Leituras infravermelho
+boolean flag;                  //Encontra linha horizontal
 
 // ************************* //
 //   Constantes e structs    //
@@ -111,9 +112,10 @@ void loop()
     IR[0] = IR[0] + 1;
     delay(TEMPO_DELAY); 
   }
+// CASO 4: Sensores encontram linha horizontal
   else if((IR[2]==1 && IR[3]==1) && IR[4]==1)
   { 
-    freia();
+    flag = 1;
     IR[0] = 0;
     delay(TEMPO_DELAY); 
   }
@@ -121,8 +123,43 @@ void loop()
 // ******************** //
 //    Saida (Motores)   //
 // *******************  //
-
+  //CASO 4: Freia
+  if(flag == 1)    
+  {
+      digitalWrite(motorEsq.pinoA, LOW);
+      digitalWrite(motorEsq.pinoB, LOW);
   
+      analogWrite(motorDir.pinoA,  LOW);
+      digitalWrite(motorDir.pinoB, LOW);      
+  }
+  else
+  {
+    if(IR[0])//CASO 1: seguindo em frente
+    {
+      digitalWrite(motorEsq.pinoA, FRENTE);
+      digitalWrite(motorEsq.pinoB, !(FRENTE));
+  
+      analogWrite(motorDir.pinoA, FRENTE_PWM);
+      digitalWrite(motorDir.pinoB, !(FRENTE));  
+    }
+    else if(IR[0]<0)//CASO 2: girar a direita
+    {
+      digitalWrite(motorEsq.pinoA, FRENTE);
+      digitalWrite(motorEsq.pinoB, !(FRENTE));
+  
+      digitalWrite(motorDir.pinoA, TRAS);
+      analogWrite (motorDir.pinoB, FRENTE_PWM);       
+    }
+    else if(IR[0]>0) //CASO 3: girar a esquerda  
+    {
+      digitalWrite(motorEsq.pinoA, TRAS);
+      digitalWrite(motorEsq.pinoB, !(TRAS));
+  
+      analogWrite(motorDir.pinoA, FRENTE_PWM);
+      digitalWrite(motorDir.pinoB, !(FRENTE));       
+    }
+  }
+// -----------------------------------------------------------------------  
 // ********************** //
 //      TESTES            //
 // ********************** //
@@ -139,6 +176,30 @@ void loop()
 //  analogWrite(motorDir.pinoA, FRENTE_PWM);
 //  digitalWrite(motorDir.pinoB, !(FRENTE));
 
+// ********************************************** //
+// Teste 2: motor gira e então anda p/ frente     //
+// Resultado: Embora a funcao girar funcione,     //
+// o giro desalinha uma das rodas brancas e       //
+// o robo não volta p/ inicio torto               //
+// OBS: Ocorre menos qto menor o delay. Talvez    //
+// n seja problema dependendo do controle de IR   //
+// ********************************************** //
+//      digitalWrite(motorEsq.pinoA, TRAS);
+//      digitalWrite(motorEsq.pinoB, !(TRAS));
+//  
+//      analogWrite(motorDir.pinoA, FRENTE_PWM);
+//      digitalWrite(motorDir.pinoB, !(FRENTE));
+//      delay(200);
+//      
+//      digitalWrite(motorEsq.pinoA, FRENTE);
+//      digitalWrite(motorEsq.pinoB, !(FRENTE));
+//  
+//      analogWrite(motorDir.pinoA, FRENTE_PWM);
+//      digitalWrite(motorDir.pinoB, !(FRENTE));     
+//      delay(200);
+
+  
+// -----------------------------------------------------------------------  
 
         
 }
