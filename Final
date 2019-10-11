@@ -210,6 +210,8 @@ void loop()
 // Resultado: sensor 5 nao funciona,              //
 // logica de controle foi corrigida               //
 // e agora funciona.                              //
+// OBS: Nao ta 100%. tem dificuldade em freiar    //
+// depois de comecar a andar                      //
 // ********************************************** //
 //        Serial.println("=========================");
 //        Serial.println("ENTRADA");
@@ -252,8 +254,6 @@ void loop()
 //        Serial.println("=========================");
 //        delay(1000);         
 //                                    
-
-  
 // -----------------------------------------------------------------------  
 
         
