@@ -1,36 +1,69 @@
+//encoder
+#define ENCODERE PA8
+#define ENCODERD PA9
+int rotationE,rotationD;
+int vE, vD;
+unsigned int timer;
+volatile byte counterE,counterD;
 
- 
-#define MOTOR1  PA8  // Motor 1 Interrupt Pin - INT 0
- 
-unsigned int counter1 = 0;
-float diskslots = 20;  // Change to match value of encoder disk
- 
-// Motor 1 pulse count ISR
-void ISR_count1()  
-{
-  counter1++;  // increment Motor 1 counter value
-} 
 
- 
-void setup() 
+
+//encoder - ISR
+void doCountE(){
+  detachInterrupt(digitalPinToInterrupt(ENCODERE));
+  counterE++;
+  attachInterrupt(digitalPinToInterrupt(ENCODERE), doCountE, RISING);
+}
+void doCountD(){
+  detachInterrupt(digitalPinToInterrupt(ENCODERD));
+  counterD++;
+  attachInterrupt(digitalPinToInterrupt(ENCODERD), doCountD, RISING);
+}
+
+void setup() {
+    Serial.begin(9600);
+    pinMode(ENCODERE, INPUT);
+    pinMode(ENCODERD, INPUT);
+    attachInterrupt(digitalPinToInterrupt(ENCODERE), doCountE, RISING);
+    attachInterrupt(digitalPinToInterrupt(ENCODERD), doCountD, RISING);
+    
+    timer = 0;
+    rotationE = 0;
+    counterE = 0;
+    vE = 0;
+    rotationD = 0;
+    counterD = 0;
+    vD = 0;
+}
+
+void encoder()
 {
-  float ti;
-  float tf;
-  float rotation1;
-  float counter1;
-  digitalPinToInterrupt(MOTOR1);
-  Serial.begin(9600);
-  ti = millis();
-  
-} 
- 
-void loop()
-{
-  tf = millis();  
-  if (tf-ti == 60000);
-  {
-    float rotation1 = (counter1 / diskslots) * 60.00;
-    ti = millis();  
-  } 
+     if (millis() - timer >= 1000)  
+     {  
        
+          detachInterrupt(digitalPinToInterrupt(ENCODERE));    
+          rotationE = (60 * 1000 / 20 ) / (millis() - timer) * counterE;    
+          timer = millis();    
+          counterE = 0;    
+          //Teste Esquerdo
+          Serial.print(F("V Esquerdo = "));    
+          Serial.println(rotationE, DEC);    
+
+          attachInterrupt(digitalPinToInterrupt(ENCODERE), doCountE, RISING);
+          
+          detachInterrupt(digitalPinToInterrupt(ENCODERD));    
+          rotationD = (60 * 1000 / 20 ) / (millis() - timer) * counterD;    
+          timer = millis();    
+          counterD = 0;    
+          //Teste Direito  
+          Serial.print(F("V Direito = "));    
+          Serial.println(rotationD, DEC);    
+              
+          attachInterrupt(digitalPinToInterrupt(ENCODERD), doCountD, RISING); 
+          
+     }
+}
+
+void loop() {
+  
 }
