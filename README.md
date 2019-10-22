@@ -7,8 +7,11 @@ Este repositorio cobre o desenvolvimento de um robô seguidor de linha
  Emissor: PA10
  
  # Ponte H
- Motor 1A: PA1           Motor 2A: PB5
- Motor 1B: PA2           Motor 2B: PB3
+ Motor 1A: PA1           
+ Motor 1B: PA2           
+ 
+ Motor 2A: PB5
+ Motor 2B: PB3
  
  # Encoders
  Encoder 1: PA8          Encoder 2: PA9
