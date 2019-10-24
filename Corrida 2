@@ -1,0 +1,196 @@
+// ***********************************  //
+// GRUPO 5 - SEGUIDOR DE LINHA          //
+// Autores:                             //
+//          Paulo Grego                 //
+//          Wellington                  //
+//          Murilo                      //
+// Ultima modificação: 23/10/2019       //
+//AVISO! NÃO USAR PINOS 5 E 6 DO ARDUINO//
+// ***********************************  //
+
+#include <QTRSensors.h>
+
+// ************* //
+//   Pinagem     //
+// ************* //
+
+//ponteH(motor1)
+#define MOTOR_1A PA2    
+#define MOTOR_1B PA3    
+#define PWM_1    HIGH
+    
+//ponteH(motor2)
+#define MOTOR_2A PA6     
+#define MOTOR_2B PA7    
+#define PWM_2    HIGH   
+
+ 
+//encoder
+#define ENCODERE PA8
+#define ENCODERD PA9
+int rotationE,rotationD;
+int vE, vD;
+unsigned int timer;
+volatile byte counterE,counterD;
+ 
+//IR
+QTRSensors qtr;
+const uint8_t SensorCount = 4;
+uint16_t sensorValues[SensorCount];
+
+int IR[6];                     //Leituras infravermelho
+int a, f2, f3, f4;
+boolean flag;                  //Encontra linha horizontal
+
+
+// ************************** //
+//    Interrupcoes encoder    //
+// ************************** //
+void doCountE(){
+  detachInterrupt(digitalPinToInterrupt(ENCODERE));
+  counterE++;
+  attachInterrupt(digitalPinToInterrupt(ENCODERE), doCountE, RISING);
+}
+void doCountD(){
+  detachInterrupt(digitalPinToInterrupt(ENCODERD));
+  counterD++;
+  attachInterrupt(digitalPinToInterrupt(ENCODERD), doCountD, RISING);
+}
+void encoder()
+{
+     if (millis() - timer >= 1000)  
+     {  
+       
+          detachInterrupt(digitalPinToInterrupt(ENCODERE));    
+          rotationE = (60 * 1000 / 20 ) / (millis() - timer) * counterE;    
+          timer = millis();    
+          counterE = 0;    
+          //Teste Esquerdo
+          Serial.print(F("V Esquerdo = "));    
+          Serial.println(rotationE, DEC);    
+
+          attachInterrupt(digitalPinToInterrupt(ENCODERE), doCountE, RISING);
+          
+          detachInterrupt(digitalPinToInterrupt(ENCODERD));    
+          rotationD = (60 * 1000 / 20 ) / (millis() - timer) * counterD;    
+          timer = millis();    
+          counterD = 0;    
+          //Teste Direito  
+          Serial.print(F("V Direito = "));    
+          Serial.println(rotationD, DEC);    
+              
+          attachInterrupt(digitalPinToInterrupt(ENCODERD), doCountD, RISING); 
+          
+     }
+}
+//========================================================
+//  SETUP
+//========================================================
+
+void setup() {
+  
+  Serial.begin(9600);
+  
+// ************************** //
+//    calibra infravermelho   //
+// ************************** //
+
+  qtr.setTypeAnalog();
+  qtr.setSensorPins((const uint8_t[]){PB1, PB0, PA7, PA6}, SensorCount);
+  qtr.setEmitterPin(PA10);
+
+  qtr.resetCalibration();
+    for (uint16_t i = 0; i < 400; i++)
+    {
+      qtr.calibrate();
+    }
+    
+// ************************** //
+//    inicializa encoder      //
+// ************************** //
+
+    pinMode(ENCODERE, INPUT);
+    pinMode(ENCODERD, INPUT);
+    attachInterrupt(digitalPinToInterrupt(ENCODERE), doCountE, RISING);
+    attachInterrupt(digitalPinToInterrupt(ENCODERD), doCountD, RISING);
+    
+    timer = 0;
+    rotationE = 0;
+    counterE = 0;
+    vE = 0;
+    rotationD = 0;
+    counterD = 0;
+    vD = 0;    
+    
+// ************************** //
+//    inicializa motores      //
+// ************************** //  
+  pinMode(MOTOR_1A, OUTPUT);
+  pinMode(MOTOR_1B, OUTPUT);
+  pinMode(PWM_1, OUTPUT);
+  analogWrite (PWM_1, 1);
+  
+  pinMode(MOTOR_2A, OUTPUT);
+  pinMode(MOTOR_2B, OUTPUT);
+  pinMode(PWM_2, OUTPUT);
+
+  analogWrite (PWM_2, 1);
+}
+
+//========================================================
+//  LOOP
+//========================================================
+void loop() {
+  
+// *************************** //
+//   Entrada: IR e encoders    //
+// *************************** //
+  uint16_t position = qtr.readLineWhite(sensorValues);
+  encoder();
+//  for (uint8_t i = 0; i < SensorCount; i++)
+//  {
+//    Serial.print(sensorValues[i]);
+//    Serial.print('\t');
+//  }
+//  Serial.println();
+//
+//  delay(250);
+//}
+
+// *************************** //
+//    Controle Motores         //
+// *************************** // 
+//Frente
+if( position > 1000 && position < 2000 )
+  {
+    analogWrite (MOTOR_1A, 255);
+    digitalWrite (MOTOR_1B, LOW);
+    analogWrite (MOTOR_2A, 255);
+    digitalWrite (MOTOR_2B, LOW); 
+  }
+//gira 1 sentido  
+  if(position < 1000)                     
+  {
+    analogWrite (MOTOR_1A, 255);
+    digitalWrite (MOTOR_1B, LOW);
+    analogWrite (MOTOR_2A, 100);
+    digitalWrite (MOTOR_2B, LOW);  
+  }
+//gira outro sentido
+  if(position > 2000)                     
+  {
+    analogWrite (MOTOR_1A, 100);
+    digitalWrite (MOTOR_1B, LOW);
+    analogWrite (MOTOR_2A, 255);
+    digitalWrite (MOTOR_2B, LOW);
+  }
+//Condicao de Parada
+  if(sensorValues[0] > 500 && sensorValues[1] > 500 && sensorValues[2] > 500 && sensorValues[3] > 500)
+  {
+    analogWrite (MOTOR_1A, 0);
+    digitalWrite (MOTOR_1B, LOW);
+    analogWrite (MOTOR_2A, 0);
+    digitalWrite (MOTOR_2B, LOW); 
+  }
+        
+}                     
