@@ -92,7 +92,7 @@ if(f3 == 1 && f2 == 0 && f4 == 0){
   analogWrite (MOTOR_2A, 255);
   digitalWrite (MOTOR_2B, LOW);  
   timer = 0;
-  IR[0] = 0;
+
   if(b > 1)
   {
     a=10;
@@ -105,7 +105,6 @@ if(f3 == 1 && f2 == 1 && f4 == 0){
   analogWrite (MOTOR_2A, 100);
   digitalWrite (MOTOR_2B, LOW);  
   timer = 0;
-  IR[0]++;
 }
 if(f2 == 1 && f3 == 0 && f4 == 0)    
   {
@@ -113,16 +112,14 @@ if(f2 == 1 && f3 == 0 && f4 == 0)
     digitalWrite (MOTOR_1B, LOW);
     analogWrite (MOTOR_2A, 80);
     digitalWrite (MOTOR_2B, LOW);
-    timer = 0;    
-    IR[0]++;
+    timer = 0;  
 //     delay(1000);  
 if(f3 == 1 && f2 == 0 && f4 == 1){
-    analogWrite (MOTOR_1A, 100);
-    digitalWrite (MOTOR_1B, LOW);
-    analogWrite (MOTOR_2A, 255);
-    digitalWrite (MOTOR_2B, LOW);  
-    timer = 0; 
-    IR[0]--;
+  analogWrite (MOTOR_1A, 100);
+  digitalWrite (MOTOR_1B, LOW);
+  analogWrite (MOTOR_2A, 255);
+  digitalWrite (MOTOR_2B, LOW);  
+  timer = 0;
 }
   }
   if(f4 == 1 && f2 == 0 && f3 == 0)    
@@ -132,26 +129,54 @@ if(f3 == 1 && f2 == 0 && f4 == 1){
     analogWrite (MOTOR_2A, 255);
     digitalWrite (MOTOR_2B, LOW);
     timer = 0;
-    IR[0]--;
 //    delay(1000);   
   }
   if(f4 == 1 && f3 == 1 && f2 == 1)    
   {
         timer++;
-        a = 10;  
+        a = 10; 
+       // digitalWrite (LED, HIGH);   
        if(a==10 && timer > 6000)    
        {
+ //       digitalWrite (LED, LOW);  
         timer=0;
         b++;
         //delay(10);
        } 
       if(b > 1)
-      {  
+        {
+ //        digitalWrite (LED, HIGH);   
         analogWrite (MOTOR_1A, 0);
         digitalWrite (MOTOR_1B, LOW);
         analogWrite (MOTOR_2A, 0);
         digitalWrite (MOTOR_2B, LOW);  
-      }
-  }
+        }
+}
+// *************************** //
+//          Testes             //
+// *************************** //  
+//        Serial.println("=========================");
+//        Serial.println("ENTRADA");
+//        Serial.print("[ S1: ");
+//        Serial.print(IR[1]);
+//        Serial.print(" S2: ");
+//        Serial.print(IR[2]);
+//        Serial.print(" S3: ");
+//        Serial.print(IR[3]);
+//        Serial.print(" S4: ");
+//        Serial.print(IR[4]);
+//        Serial.print(" S5: ");
+//        Serial.print(a);        
+//        Serial.print(" ]");
+//        //erro
+//        Serial.print("ERRO P: ");
+//        Serial.print(IR[0]);
+//        Serial.print("    FLAG ");
+//        Serial.println(flag);
+//        //saida
+//        Serial.println("SAIDA");
+//       
+//        Serial.println("=========================");
+        Serial.println(timer);
         
 }                                  
