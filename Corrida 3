@@ -1,0 +1,157 @@
+// ***********************************  //
+// GRUPO 5 - SEGUIDOR DE LINHA          //
+// Autores:                             //
+//          Paulo Grego                 //
+//          Wellington                  //
+//          Murilo                      //
+// Ultima modificação: 11/10/2019       //
+//AVISO! NÃO USAR PINOS 5 E 6 DO ARDUINO//
+// ***********************************  //
+
+
+// ************* //
+//   Pinagem     //
+// ************* //
+
+//ponteH(motor1)
+#define MOTOR_1A PA3    
+#define MOTOR_1B PA4    
+#define PWM_1    HIGH
+    
+//ponteH(motor2)
+#define MOTOR_2A PA8     
+#define MOTOR_2B PA9    
+#define PWM_2    HIGH   
+ 
+//ponteH(motor1)
+#define S1  PB3                //Sensor1
+#define S2  PB5               //Sensor2
+#define S3  PB6                //Sensor3
+#define S4  PB8                //Sensor4
+#define S5  PB9               //Sensor5
+int IR[6];                     //Leituras infravermelho
+int a,c = 0, b=0,f2, f3, f4, timer;
+boolean flag;                  //Encontra linha horizontal
+
+#define LED PC13
+
+void setup() {
+  Serial.begin(9600);
+// ************************** //
+//  inicializa infravermelho  //
+// ************************** //
+  pinMode(S1, INPUT);
+  pinMode(S2, INPUT);
+  pinMode(S3, INPUT);
+  pinMode(S4, INPUT);
+  pinMode(S5, INPUT);  // put your setup code here, to run once:
+  
+  pinMode(MOTOR_1A, OUTPUT);
+  pinMode(MOTOR_1B, OUTPUT);
+  pinMode(PWM_1, OUTPUT);
+  analogWrite (PWM_1, 1);
+  
+  pinMode(MOTOR_2A, OUTPUT);
+  pinMode(MOTOR_2B, OUTPUT);
+  pinMode(PWM_2, OUTPUT);
+  analogWrite (PWM_2, 1);
+
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  
+// *************************** //
+//   Entrada: IR e encoders    //
+// *************************** //
+
+  IR[0] = 0;                //erro do sensor
+  IR[1] = digitalRead(S1);  //sensor esquerda extrema
+  IR[2] = digitalRead(S2);  //sensor esquerda
+  IR[3] = digitalRead(S3);  //sensor central
+  IR[4] = digitalRead(S4);  //sensor direita
+  IR[5] = digitalRead(S5);  //sensor direita  extrema
+
+// *************************** //
+//          Controle           //
+// *************************** // 
+if(IR[3] == 1 && IR[2] == 0 && IR[4] == 0){f3=1; f2=0; f4=0; a=0;}
+if(IR[3] == 0 && IR[2] == 1 && IR[4] == 0){f3=0; f2=1; f4=0;}
+if(IR[3] == 1 && IR[2] == 1 && IR[4] == 0){f3=1; f2=1; f4=0;}
+if(IR[3] == 0 && IR[2] == 0 && IR[4] == 1){f3=0; f2=0; f4=1;}
+if(IR[3] == 1 && IR[2] == 0 && IR[4] == 1){f3=1; f2=0; f4=1;}
+if(IR[3] == 1 && IR[2] == 1 && IR[4] == 1){f3=1; f2=1; f4=1;}
+
+// *************************** //
+//    Saida: Motores           //
+// *************************** // 
+
+if(f3 == 1 && f2 == 0 && f4 == 0){
+  analogWrite (MOTOR_1A, 255);
+  digitalWrite (MOTOR_1B, LOW);
+  analogWrite (MOTOR_2A, 255);
+  digitalWrite (MOTOR_2B, LOW);  
+  timer = 0;
+  IR[0] = 0;
+  if(b > 1)
+  {
+    a=10;
+  }
+}
+
+if(f3 == 1 && f2 == 1 && f4 == 0){
+  analogWrite (MOTOR_1A, 255);
+  digitalWrite (MOTOR_1B, LOW);
+  analogWrite (MOTOR_2A, 100);
+  digitalWrite (MOTOR_2B, LOW);  
+  timer = 0;
+  IR[0]++;
+}
+if(f2 == 1 && f3 == 0 && f4 == 0)    
+  {
+    analogWrite (MOTOR_1A, 255);
+    digitalWrite (MOTOR_1B, LOW);
+    analogWrite (MOTOR_2A, 80);
+    digitalWrite (MOTOR_2B, LOW);
+    timer = 0;    
+    IR[0]++;
+//     delay(1000);  
+if(f3 == 1 && f2 == 0 && f4 == 1){
+    analogWrite (MOTOR_1A, 100);
+    digitalWrite (MOTOR_1B, LOW);
+    analogWrite (MOTOR_2A, 255);
+    digitalWrite (MOTOR_2B, LOW);  
+    timer = 0; 
+    IR[0]--;
+}
+  }
+  if(f4 == 1 && f2 == 0 && f3 == 0)    
+  {
+    analogWrite (MOTOR_1A, 80);
+    digitalWrite (MOTOR_1B, LOW);
+    analogWrite (MOTOR_2A, 255);
+    digitalWrite (MOTOR_2B, LOW);
+    timer = 0;
+    IR[0]--;
+//    delay(1000);   
+  }
+  if(f4 == 1 && f3 == 1 && f2 == 1)    
+  {
+        timer++;
+        a = 10;  
+       if(a==10 && timer > 6000)    
+       {
+        timer=0;
+        b++;
+        //delay(10);
+       } 
+      if(b > 1)
+      {  
+        analogWrite (MOTOR_1A, 0);
+        digitalWrite (MOTOR_1B, LOW);
+        analogWrite (MOTOR_2A, 0);
+        digitalWrite (MOTOR_2B, LOW);  
+      }
+  }
+        
+}                                  
